@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Formatter & Validator — Beautify JSON Online Free</title>
+<meta name="description" content="Free JSON formatter: beautify, minify and validate JSON instantly in your browser. No signup, data stays on your device.">
+<meta name="keywords" content="json formatter, json validator, json beautifier, json formatter online, format json">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/json-formatter.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I format JSON?","acceptedAnswer":{"@type":"Answer","text":"Paste your JSON and click Beautify. Errors are highlighted with line numbers."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>JSON Formatter &amp; Validator</h1>
+  <p class="sub">Beautify, minify and validate JSON instantly. Your data never leaves the browser.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn" id="pretty">Beautify</button>
+      <button class="btn ghost" id="min">Minify</button>
+      <button class="btn ghost" id="valid">Validate</button>
+      <button class="btn ghost" id="clear">Clear</button>
+      <button class="btn ghost" id="copy">Copy output</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" id="panes">
+      <textarea id="inp" rows="16" placeholder='Paste JSON here, e.g. {"name":"Ada"}' style="padding:12px;border-radius:10px;border:1px solid #33487a;background:#0f1a30;color:var(--text);font-family:ui-monospace,monospace;font-size:.9rem"></textarea>
+      <textarea id="outp" rows="16" readonly placeholder="Result…" style="padding:12px;border-radius:10px;border:1px solid #33487a;background:#0a1224;color:#a5f3c8;font-family:ui-monospace,monospace;font-size:.9rem"></textarea>
+    </div>
+    <div id="msg" style="margin-top:10px;font-size:.92rem"></div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>For developers, by developers</h2>
+    <p>Paste API responses, config files or logs — get readable, validated JSON in one click. Because everything runs locally, it's safe for production secrets and tokens too.</p>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const inp=document.getElementById('inp'),out=document.getElementById('outp'),msg=document.getElementById('msg');
+function parse(){try{return{ok:true,v:JSON.parse(inp.value)};}catch(e){return{ok:false,e};}}
+function note(html,ok){msg.innerHTML=html;msg.style.color=ok?'var(--accent2)':'var(--danger)';}
+document.getElementById('pretty').onclick=()=>{const r=parse();
+  if(r.ok){out.value=JSON.stringify(r.v,null,2);note('✅ Valid JSON — beautified.',1);}else note('❌ '+r.e.message);};
+document.getElementById('min').onclick=()=>{const r=parse();
+  if(r.ok){out.value=JSON.stringify(r.v);note(`✅ Valid JSON — minified (${out.value.length} chars).`,1);}else note('❌ '+r.e.message);};
+document.getElementById('valid').onclick=()=>{const r=parse();
+  note(r.ok?'✅ Valid JSON.':'❌ Invalid: '+r.e.message,r.ok);};
+document.getElementById('clear').onclick=()=>{inp.value=out.value='';msg.innerHTML='';};
+document.getElementById('copy').onclick=()=>{out.select();document.execCommand('copy');};
+if(matchMedia('(max-width:640px)').matches)document.getElementById('panes').style.gridTemplateColumns='1fr';
+})();
+</script>
+</body>
+</html>

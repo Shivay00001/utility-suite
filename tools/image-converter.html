@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convert WebP to PNG / JPG Online — Free Image Format Converter</title>
+<meta name="description" content="Free image format converter: WebP to PNG, WebP to JPG, PNG to WebP, JPG to WebP. Convert images online in your browser — no signup, no upload.">
+<meta name="keywords" content="webp to png, webp to jpg, convert webp to png online, png to webp, jpg to webp converter, image format converter">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/image-converter.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I convert WebP to PNG?","acceptedAnswer":{"@type":"Answer","text":"Drop the WebP file, choose PNG as the target format, and download. Conversion happens in your browser."}},
+ {"@type":"Question","name":"Why convert images to WebP?","acceptedAnswer":{"@type":"Answer","text":"WebP files are 25-35% smaller than JPG/PNG at the same quality, so pages load faster."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>Image Format Converter</h1>
+  <p class="sub">Convert between <strong>JPG, PNG and WebP</strong> — including WebP → PNG/JPG. Free, private, runs in your browser.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div class="drop" id="dz"><div>📁 <strong>Drop images here</strong> or click to browse<br><small>JPG, PNG, WebP, GIF, BMP — batch supported</small></div>
+      <input type="file" id="fi" accept="image/*" multiple></div>
+    <div class="controls">
+      <div class="field"><label>Convert to</label><select id="fmt">
+        <option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>
+      <div class="field"><label>Quality (JPG/WebP): <b id="qv">90</b>%</label><input type="range" id="q" min="10" max="100" value="90"></div>
+    </div>
+    <button class="btn" id="go" disabled>Convert</button>
+    <div class="progress" id="pg"><i></i></div>
+    <div class="filelist" id="list"></div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>WebP to PNG / JPG — why it matters</h2>
+    <p>WebP is great for the web, but many apps (Photoshop, older software, some upload forms) still demand PNG or JPG. This converter changes formats <strong>without uploading anything</strong> — the #1 searched image conversion task online.</p>
+    <h2>Which format should I choose?</h2>
+    <ul><li><strong>WebP</strong> — smallest files, best for websites.</li><li><strong>JPG</strong> — universal compatibility for photos.</li><li><strong>PNG</strong> — lossless, keeps transparency; bigger files.</li></ul>
+    <div class="faq"><h2>FAQs</h2>
+      <details><summary>Does converting WebP to JPG lose quality?</summary><p>Both are lossy formats, so one re-encode at quality 90+ is visually identical.</p></details>
+      <details><summary>Can I convert HEIC (iPhone photos)?</summary><p>Browser support for HEIC is limited — convert HEIC to JPG on your phone first, then use this tool freely.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const dz=document.getElementById('dz'),list=document.getElementById('list'),go=document.getElementById('go'),pg=document.getElementById('pg');
+let files=[];
+VQT.dropzone(dz,{onFiles(f){files=f.filter(x=>x.type.startsWith('image/'));go.disabled=!files.length;
+  list.innerHTML=files.map(x=>`<div class="fileitem"><span>🖼️ ${x.name} <small>${VQT.fmt(x.size)}</small></span></div>`).join('');}});
+document.getElementById('q').oninput=e=>document.getElementById('qv').textContent=e.target.value;
+const canvas=document.createElement('canvas');
+go.onclick=async()=>{
+  const mime=document.getElementById('fmt').value,q=+document.getElementById('q').value/100;
+  const ext=mime.split('/')[1].replace('jpeg','jpg');
+  go.disabled=true;list.innerHTML='';
+  for(let i=0;i<files.length;i++){
+    VQT.progress(pg,i/files.length);
+    try{
+      const img=await VQT.loadImage(files[i]);
+      canvas.width=img.width;canvas.height=img.height;
+      const ctx=canvas.getContext('2d');
+      if(mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+      ctx.drawImage(img,0,0);
+      const blob=await new Promise(r=>canvas.toBlob(r,mime,mime==='image/png'?undefined:q));
+      if(!blob)throw new Error('Format not supported by this browser');
+      const name=files[i].name.replace(/\.[^.]+$/,'')+'.'+ext;
+      const row=document.createElement('div');row.className='fileitem';
+      row.innerHTML=`<span>✅ ${files[i].name} → ${ext.toUpperCase()} <small>${VQT.fmt(blob.size)}</small></span>`;
+      const b=document.createElement('button');b.className='btn';b.style.padding='6px 14px';b.textContent='Download';
+      b.onclick=()=>VQT.download(blob,name);row.appendChild(b);list.appendChild(row);
+    }catch(e){const r=document.createElement('div');r.className='fileitem';r.textContent='❌ '+files[i].name+': '+e.message;list.appendChild(r);}
+  }
+  VQT.progress(pg,null);go.disabled=false;
+};
+})();
+</script>
+</body>
+</html>

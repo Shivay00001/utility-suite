@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compress Image Online — Reduce JPG, PNG, WebP Size Free</title>
+<meta name="description" content="Free image compressor: reduce JPG, PNG and WebP file size online without visible quality loss. No signup, files never leave your device.">
+<meta name="keywords" content="compress image online, reduce image size, compress jpg, image compressor, reduce png size">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/image-compressor.html">
+<meta property="og:title" content="Compress Image Online — Free, Private, No Signup">
+<meta property="og:description" content="Shrink JPG, PNG & WebP images right in your browser.">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I compress an image online?","acceptedAnswer":{"@type":"Answer","text":"Drop your image above, pick a quality level, and click Compress. Download the smaller file instantly."}},
+ {"@type":"Question","name":"Will compression reduce image quality?","acceptedAnswer":{"@type":"Answer","text":"At quality 80 you typically cut file size by 50-70% with no visible difference."}},
+ {"@type":"Question","name":"Is my image uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No — compression runs entirely in your browser. Your images never leave your device."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>Compress Image Online</h1>
+  <p class="sub">Reduce JPG, PNG &amp; WebP file size without visible quality loss. Free, no signup — processed locally in your browser.</p>
+
+  <!-- ADSENSE: leaderboard unit
+  <div class="adslot leader">Advertisement — paste AdSense leaderboard code here</div> -->
+
+  <div class="toolbox">
+    <div class="drop" id="dz"><div>📁 <strong>Drop images here</strong> or click to browse<br><small>JPG, PNG, WebP, GIF, BMP — multiple files OK</small></div>
+      <input type="file" id="fi" accept="image/*" multiple></div>
+    <div class="controls">
+      <div class="field"><label>Quality: <b id="qv">80</b>%</label><input type="range" id="q" min="10" max="100" value="80"></div>
+      <div class="field"><label>Max dimension (px, 0 = keep)</label><input type="number" id="maxd" value="0" min="0" max="8000"></div>
+      <div class="field"><label>Output format</label><select id="fmt">
+        <option value="auto">Same as input</option><option value="image/jpeg">JPG</option>
+        <option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div>
+    </div>
+    <button class="btn" id="go" disabled>Compress images</button>
+    <div class="progress" id="pg"><i></i></div>
+    <div class="filelist" id="list"></div>
+  </div>
+
+  <!-- ADSENSE: responsive in-content
+  <div class="adslot box">Advertisement — paste AdSense responsive code here</div> -->
+
+  <section class="article">
+    <h2>How to compress an image</h2>
+    <ol><li>Drop one or more images into the box above.</li><li>Choose quality (80 is the sweet spot) and optional max size.</li><li>Click <strong>Compress images</strong> and download each result.</li></ol>
+    <h2>Why compress images?</h2>
+    <p>Large images slow down websites, eat mobile data and bounce off email attachment limits. Compressing to quality 80 typically cuts <strong>50–70% of file size</strong> with no visible difference — the same technique used by tools like TinyPNG.</p>
+    <div class="faq"><h2>FAQs</h2>
+      <details><summary>What's the best quality setting?</summary><p>80 for photos on the web. Use 90+ for print, 60–70 when every kilobyte counts.</p></details>
+      <details><summary>Does it work for PNG with transparency?</summary><p>Yes — choose PNG output to keep transparency, or WebP which also supports it at smaller sizes.</p></details>
+      <details><summary>Is there a file size limit?</summary><p>Free: 25 MB per image, 5 at a time. <a href="../pricing.html">Pro</a> raises both limits and removes ads.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a> · <a href="../pricing.html">Pricing</a></div></footer>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const dz=document.getElementById('dz'),fi=document.getElementById('fi'),list=document.getElementById('list'),
+      go=document.getElementById('go'),pg=document.getElementById('pg');
+let files=[];
+VQT.dropzone(dz,{onFiles(f){files=f.filter(x=>x.type.startsWith('image/'));render();}});
+function render(){
+  list.innerHTML=files.map((f,i)=>`<div class="fileitem"><span>🖼️ ${f.name} <small>${VQT.fmt(f.size)}</small></span><button class="btn ghost" style="padding:4px 10px" data-i="${i}">✕</button></div>`).join('');
+  go.disabled=!files.length;
+  list.querySelectorAll('button').forEach(b=>b.onclick=()=>{files.splice(+b.dataset.i,1);render();});
+}
+document.getElementById('q').oninput=e=>document.getElementById('qv').textContent=e.target.value;
+const canvas=document.createElement('canvas');
+function process(file,q,maxd,fmt){
+  return VQT.loadImage(file).then(img=>{
+    let w=img.width,h=img.height;
+    if(maxd>0&&Math.max(w,h)>maxd){const s=maxd/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s);}
+    canvas.width=w;canvas.height=h;
+    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+    let mime=fmt==='auto'?file.type:fmt;
+    if(mime==='image/png'&&q<100){/* png ignores quality */}
+    return new Promise(res=>canvas.toBlob(b=>res(b),mime,mime==='image/png'?undefined:q/100));
+  });
+}
+go.onclick=async()=>{
+  const q=+document.getElementById('q').value,maxd=+document.getElementById('maxd').value,
+        fmt=document.getElementById('fmt').value;
+  go.disabled=true;list.innerHTML='';
+  for(let i=0;i<files.length;i++){
+    VQT.progress(pg,i/files.length);
+    try{
+      const blob=await process(files[i],q,maxd,fmt);
+      const saved=VQT.pct(blob.size,files[i].size);
+      const ext={ 'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[blob.type]||'jpg';
+      const name=files[i].name.replace(/\.[^.]+$/,'')+'-compressed.'+ext;
+      const row=document.createElement('div');row.className='fileitem';
+      row.innerHTML=`<span>✅ ${files[i].name}<br><small>${VQT.fmt(files[i].size)} → <b style="color:var(--accent2)">${VQT.fmt(blob.size)}</b> (−${saved}%)</small></span>`;
+      const b=document.createElement('button');b.className='btn';b.style.padding='6px 14px';b.textContent='Download';
+      b.onclick=()=>VQT.download(blob,name);row.appendChild(b);list.appendChild(row);
+    }catch(e){const r=document.createElement('div');r.className='fileitem';r.textContent='❌ '+files[i].name+': '+e.message;list.appendChild(r);}
+  }
+  VQT.progress(pg,null);go.disabled=false;
+};
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free QR Code Generator — Create QR Codes Online (PNG Download)</title>
+<meta name="description" content="Free QR code generator: create QR codes for links, text, Wi-Fi and contact cards. Download as PNG. No signup, works offline.">
+<meta name="keywords" content="qr code generator, free qr code generator, wifi qr code generator, qr code maker">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/qr-generator.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"Are the QR codes free forever?","acceptedAnswer":{"@type":"Answer","text":"Yes — static QR codes generated here work forever with no scan limits and no signup."}},
+ {"@type":"Question","name":"Can I make a QR code for Wi-Fi?","acceptedAnswer":{"@type":"Answer","text":"Yes — use the Wi-Fi tab, enter your network name and password, and guests can join by scanning."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>QR Code Generator</h1>
+  <p class="sub">Create free QR codes for links, text, Wi-Fi &amp; contacts. Download as PNG — no signup, no scan limits.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div class="controls">
+      <div class="field"><label>Type</label><select id="type">
+        <option value="url">Website URL</option><option value="text">Plain text</option>
+        <option value="wifi">Wi-Fi network</option><option value="vcard">Contact (vCard)</option></select></div>
+      <div class="field"><label>Size (px)</label><select id="size"><option>256</option><option selected>512</option><option>1024</option></select></div>
+      <div class="field"><label>Error correction</label><select id="ec"><option value="L">L — small</option><option value="M" selected>M — standard</option><option value="Q">Q — high</option><option value="H">H — max</option></select></div>
+    </div>
+    <div id="inputs"></div>
+    <button class="btn" id="go">Generate QR code</button>
+    <div style="text-align:center;margin-top:18px"><canvas id="qr"></canvas><div id="dl" style="margin-top:10px"></div></div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>Free static QR codes, forever</h2>
+    <p>Paid QR services charge $30+/month for <em>dynamic</em> codes with tracking. But most people just need a <strong>static</strong> QR — a link, a Wi-Fi password, a business card. Those are generated here free, work forever, and are created entirely offline in your browser.</p>
+    <div class="faq"><h2>FAQs</h2>
+      <details><summary>Do these QR codes expire?</summary><p>Never. Static QR codes encode the data directly — no server involved.</p></details>
+      <details><summary>Can I use them commercially?</summary><p>Yes — menus, packaging, flyers, business cards, all fine.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../assets/qrcode.min.js"></script>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const type=document.getElementById('type'),inputs=document.getElementById('inputs');
+const F={
+ url:[['Website URL','url','https://example.com']],
+ text:[['Text','text','Hello world']],
+ wifi:[['Network name (SSID)','ssid','MyWiFi'],['Password','pass',''],['Security','sec','WPA']],
+ vcard:[['Full name','name','Ada Lovelace'],['Phone','tel',''],['Email','email',''],['Company','org','']]};
+function renderInputs(){
+  inputs.innerHTML='';
+  F[type.value].forEach(([label,key,ph])=>{
+    const d=document.createElement('div');d.className='field';d.style.marginBottom='10px';
+    d.innerHTML=`<label>${label}</label>`;
+    let el;
+    if(key==='sec'){el=document.createElement('select');el.innerHTML='<option>WPA</option><option>WEP</option><option>nopass</option>';}
+    else{el=document.createElement('input');el.type='text';el.placeholder=ph;}
+    el.id='f_'+key;el.style.cssText='width:100%;padding:9px 10px;border-radius:8px;border:1px solid #33487a;background:#0f1a30;color:var(--text)';
+    d.appendChild(el);inputs.appendChild(d);
+  });
+}
+type.onchange=renderInputs;renderInputs();
+const val=id=>(document.getElementById('f_'+id)||{}).value||'';
+function payload(){
+  const t=type.value;
+  if(t==='url')return val('url');
+  if(t==='text')return val('text');
+  if(t==='wifi'){const sec=val('sec');return `WIFI:T:${sec};S:${val('ssid')};P:${val('pass')};;`;}
+  return `BEGIN:VCARD\nVERSION:3.0\nFN:${val('name')}\nTEL:${val('tel')}\nEMAIL:${val('email')}\nORG:${val('org')}\nEND:VCARD`;
+}
+document.getElementById('go').onclick=()=>{
+  const data=payload().trim();
+  if(!data){alert('Enter something to encode');return;}
+  const size=+document.getElementById('size').value,ec=document.getElementById('ec').value;
+  const qr=qrcode(0,ec);qr.addData(data);qr.make();
+  const n=qr.getModuleCount(),cell=Math.max(1,Math.floor(size/n)),S=cell*n;
+  const cv=document.getElementById('qr');cv.width=cv.height=S;cv.style.width=cv.style.height=Math.min(S,320)+'px';
+  const ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);ctx.fillStyle='#000';
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(qr.isDark(r,c))ctx.fillRect(c*cell,r*cell,cell,cell);
+  const dl=document.getElementById('dl');dl.innerHTML='';
+  const b=document.createElement('button');b.className='btn green';b.textContent='Download PNG';
+  b.onclick=()=>cv.toBlob(bl=>VQT.download(bl,'qrcode.png'),'image/png');
+  dl.appendChild(b);
+};
+})();
+</script>
+</body>
+</html>

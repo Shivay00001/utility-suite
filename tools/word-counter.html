@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Counter — Count Words & Characters Online Free</title>
+<meta name="description" content="Free word counter: count words, characters, sentences and reading time as you type. No signup, works offline.">
+<meta name="keywords" content="word counter, character counter, word count tool, count words online, reading time calculator">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/word-counter.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How is reading time calculated?","acceptedAnswer":{"@type":"Answer","text":"Words divided by 200 words per minute, the average adult reading speed."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>Word Counter</h1>
+  <p class="sub">Count words, characters &amp; reading time live as you type. Free forever.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div class="stats" id="stats" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px;font-size:1.05rem">
+      <span>Words: <b id="w" style="color:var(--accent)">0</b></span>
+      <span>Characters: <b id="c" style="color:var(--accent)">0</b></span>
+      <span>Characters (no spaces): <b id="cn" style="color:var(--accent)">0</b></span>
+      <span>Sentences: <b id="s" style="color:var(--accent)">0</b></span>
+      <span>Reading time: <b id="r" style="color:var(--accent2)">0 min</b></span>
+    </div>
+    <textarea id="t" rows="12" placeholder="Type or paste your text here…" style="width:100%;padding:14px;border-radius:10px;border:1px solid #33487a;background:#0f1a30;color:var(--text);font-size:1rem;font-family:inherit"></textarea>
+    <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn ghost" id="clear">Clear</button>
+      <button class="btn ghost" id="copy">Copy text</button>
+    </div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>Why count words?</h2>
+    <p>Writers, students, marketers and SEO professionals all live by word counts — essays need 1,500 words, meta descriptions need 160 characters, tweets need 280. This tool updates every count <strong>as you type</strong>, with nothing uploaded anywhere.</p>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const t=document.getElementById('t');
+function upd(){
+  const v=t.value,words=(v.match(/\S+/g)||[]).length;
+  document.getElementById('w').textContent=words.toLocaleString();
+  document.getElementById('c').textContent=v.length.toLocaleString();
+  document.getElementById('cn').textContent=v.replace(/\s/g,'').length.toLocaleString();
+  document.getElementById('s').textContent=(v.match(/[^.!?]+[.!?]+/g)||[]).length.toLocaleString();
+  const m=Math.ceil(words/200);
+  document.getElementById('r').textContent=m<1?'< 1 min':m+' min';
+}
+t.oninput=upd;upd();
+document.getElementById('clear').onclick=()=>{t.value='';upd();};
+document.getElementById('copy').onclick=()=>{t.select();document.execCommand('copy');};
+})();
+</script>
+</body>
+</html>

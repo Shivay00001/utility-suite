@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resize Image Online — Free Photo Resizer (Pixels or %)</title>
+<meta name="description" content="Free image resizer: resize photos to exact width/height in pixels or scale percentage. JPG, PNG, WebP. No signup, files stay on your device.">
+<meta name="keywords" content="resize image online, photo resizer, resize jpg, change image dimensions, image resizer">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/image-resizer.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I resize an image to specific dimensions?","acceptedAnswer":{"@type":"Answer","text":"Upload your image, enter the target width and height in pixels (aspect ratio is locked by default), then download."}},
+ {"@type":"Question","name":"Will resizing reduce quality?","acceptedAnswer":{"@type":"Answer","text":"Downsizing keeps quality sharp. Upsizing beyond the original size can look soft — we warn you when that happens."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>Resize Image Online</h1>
+  <p class="sub">Resize photos to exact pixels or a scale percentage — for web, social media &amp; print. Free, private, no signup.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div class="drop" id="dz"><div>📁 <strong>Drop an image here</strong> or click to browse</div>
+      <input type="file" id="fi" accept="image/*"></div>
+    <div id="info" style="color:var(--muted);font-size:.9rem;margin-top:8px"></div>
+    <div class="controls">
+      <div class="field"><label>Mode</label><select id="mode"><option value="px">Exact pixels</option><option value="pct">Scale %</option><option value="preset">Social presets</option></select></div>
+      <div class="field" id="fw"><label>Width (px)</label><input type="number" id="w" min="1" max="12000"></div>
+      <div class="field" id="fh"><label>Height (px)</label><input type="number" id="h" min="1" max="12000"></div>
+      <div class="field" id="fs" style="display:none"><label>Scale %</label><input type="number" id="s" value="50" min="1" max="1000"></div>
+      <div class="field" id="fp" style="display:none"><label>Preset</label><select id="preset">
+        <option value="1080x1080">Instagram square 1080×1080</option><option value="1080x1350">Instagram portrait 1080×1350</option>
+        <option value="1200x630">OG / link preview 1200×630</option><option value="1920x1080">Full HD 1920×1080</option>
+        <option value="1280x720">HD 1280×720</option><option value="800x800">Marketplace 800×800</option></select></div>
+      <div class="field"><label>Format</label><select id="fmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div>
+    </div>
+    <label style="display:block;margin:10px 0;color:var(--muted);font-size:.92rem"><input type="checkbox" id="lock" checked> Lock aspect ratio</label>
+    <div id="warn" class="note" style="display:none;border-color:var(--warn)">⚠️ Upsizing beyond the original may look blurry.</div>
+    <button class="btn" id="go" disabled>Resize &amp; download</button>
+    <div><img id="pv" class="preview" style="display:none" alt="Resized preview"></div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>Common resize use-cases</h2>
+    <ul><li><strong>Instagram:</strong> 1080×1080 square or 1080×1350 portrait.</li><li><strong>Website hero:</strong> 1920×1080 max — anything bigger wastes bandwidth.</li><li><strong>Email:</strong> 800px wide is plenty and keeps attachments small.</li></ul>
+    <div class="faq"><h2>FAQs</h2>
+      <details><summary>Does resizing happen on my device?</summary><p>Yes — entirely in your browser. Nothing is uploaded.</p></details>
+      <details><summary>Can I resize multiple images at once?</summary><p>Batch resize is a Pro feature — <a href="../pricing.html">see plans</a>.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const dz=document.getElementById('dz'),go=document.getElementById('go'),info=document.getElementById('info');
+let img=null,file=null,ow=0,oh=0;
+VQT.dropzone(dz,{onFiles(f){if(!f[0])return;file=f[0];
+  VQT.loadImage(file).then(i=>{img=i;ow=i.width;oh=i.height;
+    document.getElementById('w').value=ow;document.getElementById('h').value=oh;
+    info.textContent=`Original: ${ow} × ${oh}px — ${VQT.fmt(file.size)}`;go.disabled=false;
+    dz.querySelector('div').innerHTML='✅ <strong>'+file.name+'</strong><br><small>click to choose another</small>';});
+}});
+const mode=document.getElementById('mode');
+function syncMode(){const m=mode.value;
+  document.getElementById('fw').style.display=m==='px'?'':'none';
+  document.getElementById('fh').style.display=m==='px'?'':'none';
+  document.getElementById('fs').style.display=m==='pct'?'':'none';
+  document.getElementById('fp').style.display=m==='preset'?'':'none';}
+mode.onchange=syncMode;
+const wEl=document.getElementById('w'),hEl=document.getElementById('h');
+wEl.oninput=()=>{if(document.getElementById('lock').checked&&ow)wEl&& (hEl.value=Math.round(wEl.value*oh/ow));check();};
+hEl.oninput=()=>{if(document.getElementById('lock').checked&&oh)(wEl.value=Math.round(hEl.value*ow/oh));check();};
+function target(){const m=mode.value;
+  if(m==='pct'){const s=+document.getElementById('s').value/100;return[Math.round(ow*s),Math.round(oh*s)];}
+  if(m==='preset'){const[a,b]=document.getElementById('preset').value.split('x').map(Number);return[a,b];}
+  return[+wEl.value||ow,+hEl.value||oh];}
+function check(){const[tW]=target();document.getElementById('warn').style.display=(ow&&tW>ow)?'':'none';}
+document.getElementById('s').oninput=check;
+go.onclick=()=>{
+  const[tW,tH]=target(),mime=document.getElementById('fmt').value;
+  const c=document.createElement('canvas');c.width=tW;c.height=tH;
+  c.getContext('2d').drawImage(img,0,0,tW,tH);
+  c.toBlob(b=>{const ext=mime.split('/')[1].replace('jpeg','jpg');
+    const pv=document.getElementById('pv');pv.src=URL.createObjectURL(b);pv.style.display='';
+    VQT.download(b,file.name.replace(/\.[^.]+$/,'')+`-${tW}x${tH}.${ext}`);},mime,0.92);
+};
+})();
+</script>
+</body>
+</html>

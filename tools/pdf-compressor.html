@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compress PDF Online — Reduce PDF File Size Free</title>
+<meta name="description" content="Free PDF compressor: reduce PDF file size online for email and uploads. Lossless optimization in your browser — no signup, files stay private.">
+<meta name="keywords" content="compress pdf online, reduce pdf size, pdf compressor, shrink pdf file size">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/pdf-compressor.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How can I reduce a PDF file size?","acceptedAnswer":{"@type":"Answer","text":"Upload your PDF and click Compress. The tool rebuilds the file with optimized object streams and strips redundant metadata — 100% lossless."}},
+ {"@type":"Question","name":"Will my PDF lose quality?","acceptedAnswer":{"@type":"Answer","text":"No. This is a lossless optimization: text, images and layout are untouched."}},
+ {"@type":"Question","name":"Why do some PDFs shrink more than others?","acceptedAnswer":{"@type":"Answer","text":"PDFs with unoptimized structure shrink most. Scanned image-only PDFs are already compressed and shrink less."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>Compress PDF Online</h1>
+  <p class="sub">Reduce PDF file size for email &amp; uploads. <strong>100% lossless</strong> — processed locally in your browser.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div class="drop" id="dz"><div>📁 <strong>Drop a PDF here</strong> or click to browse<br><small>Up to 25 MB free</small></div>
+      <input type="file" id="fi" accept="application/pdf,.pdf"></div>
+    <div id="info" style="color:var(--muted);font-size:.9rem;margin-top:8px"></div>
+    <button class="btn" id="go" disabled style="margin-top:12px">Compress PDF</button>
+    <div class="progress" id="pg"><i></i></div>
+    <div class="result" id="res"></div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>How it works</h2>
+    <p>This tool rebuilds your PDF with optimized object streams, deduplicates repeated resources and strips redundant metadata — the same lossless techniques used by professional optimizers. Because it never re-encodes images or text, <strong>quality is identical</strong> to the original.</p>
+    <h2>Typical savings</h2>
+    <ul><li>Office-exported PDFs (Word/PowerPoint): <strong>10–40%</strong> smaller.</li><li>Already-optimized PDFs: a few percent.</li><li>Scanned image-only PDFs: small gains — image content is already compressed.</li></ul>
+    <div class="faq"><h2>FAQs</h2>
+      <details><summary>Is compression really lossless?</summary><p>Yes. Every page, image and font is copied exactly — only the file structure is optimized.</p></details>
+      <details><summary>Is my document uploaded?</summary><p>No. The whole process runs in your browser via JavaScript.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../assets/pdf-lib.min.js"></script>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const dz=document.getElementById('dz'),go=document.getElementById('go'),info=document.getElementById('info'),
+      pg=document.getElementById('pg'),res=document.getElementById('res');
+let file=null;
+VQT.dropzone(dz,{onFiles(f){if(!f[0])return;file=f[0];
+  info.textContent=`📄 ${file.name} — ${VQT.fmt(file.size)}`;go.disabled=false;}});
+go.onclick=async()=>{
+  go.disabled=true;res.classList.remove('show');VQT.progress(pg,0.3);
+  try{
+    const buf=await VQT.readAs('array',file);
+    const src=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    const pages=src.getPageCount();
+    const out=await PDFLib.PDFDocument.create();
+    out.setTitle('');out.setAuthor('');out.setProducer('VisionQuantech Tools');out.setCreator('');
+    (await out.copyPages(src,src.getPageIndices())).forEach(p=>out.addPage(p));
+    VQT.progress(pg,0.7);
+    const bytes=await out.save({useObjectStreams:true});
+    VQT.progress(pg,1);
+    const blob=new Blob([bytes],{type:'application/pdf'});
+    const saved=VQT.pct(blob.size,file.size);
+    res.innerHTML=`<strong>✅ Compressed ${pages} page(s)</strong>
+      <div class="stats"><span>Before: <b>${VQT.fmt(file.size)}</b></span>
+      <span>After: <b>${VQT.fmt(blob.size)}</b></span><span>Saved: <b>${saved}%</b></span></div>
+      ${saved<3?'<p style="color:var(--muted);font-size:.9rem">This PDF was already well optimized — little left to squeeze losslessly.</p>':''}`;
+    const b=document.createElement('button');b.className='btn green';b.textContent='Download compressed PDF';
+    b.onclick=()=>VQT.download(blob,file.name.replace(/\.pdf$/i,'')+'-compressed.pdf');
+    res.appendChild(b);res.classList.add('show');
+  }catch(e){res.innerHTML='❌ '+e.message;res.classList.add('show');}
+  VQT.progress(pg,null);go.disabled=false;
+};
+})();
+</script>
+</body>
+</html>

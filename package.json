@@ -1,0 +1,19 @@
+{
+  "name": "utility-suite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^3.2.3",
+    "jsdom": "^30.1.1",
+    "jszip": "^3.10.2",
+    "pdf-lib": "^1.17.1",
+    "qrcode-generator": "^2.0.4"
+  }
+}

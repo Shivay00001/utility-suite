@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API for Business — Image & PDF Processing REST API | VisionQuantech Tools</title>
+<meta name="description" content="VisionQuantech Tools API: compress images, convert formats, merge and split PDFs via REST. Free tier 1,000 calls/month, Pro and Enterprise plans.">
+<link rel="canonical" href="https://tools.visionquantech.com/api.html">
+<link rel="stylesheet" href="css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"Is there a free API tier?","acceptedAnswer":{"@type":"Answer","text":"Yes — 1,000 API calls per month free, no credit card required."}},
+ {"@type":"Question","name":"How do I authenticate?","acceptedAnswer":{"@type":"Answer","text":"Bearer token API keys, per-key rate limits and usage dashboards."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="index.html">Tools</a><a href="pricing.html">Pricing</a><a href="api.html" class="active">API</a></nav>
+</div></div></header>
+<div class="wrap">
+  <section class="hero"><h1>API for Business</h1>
+  <p class="sub">The same engines behind our free tools, as a REST API for your product. Compress images, convert formats, merge &amp; split PDFs — programmatically.</p>
+  <p><a class="btn" href="#" onclick="alert('API waitlist — coming soon!');return false;">Get a free API key</a></p>
+
+  <!-- ADSENSE: leaderboard unit
+  <div class="adslot leader">Advertisement — paste AdSense leaderboard code here</div> -->
+  <div class="note" style="max-width:640px;margin:18px auto;text-align:left">🚧 <strong>Status:</strong> API documentation is live; the hosted API is in private beta. Join the waitlist and we'll onboard you with 10,000 free calls.</div>
+  </section>
+
+  <section class="article">
+    <h2>Quickstart</h2>
+    <div class="code">curl -X POST https://api.tools.visionquantech.com/v1/images/compress \<br>
+&nbsp;&nbsp;-H "Authorization: Bearer YOUR_API_KEY" \<br>
+&nbsp;&nbsp;-F "file=@photo.jpg" -F "quality=80" -F "format=webp" \<br>
+&nbsp;&nbsp;-o photo-compressed.webp</div>
+
+    <h2>Endpoints</h2>
+    <table class="spec">
+      <tr><th>Method &amp; path</th><th>What it does</th></tr>
+      <tr><td><code>POST /v1/images/compress</code></td><td>Compress JPG/PNG/WebP; params: <code>quality</code>, <code>format</code>, <code>max_width</code></td></tr>
+      <tr><td><code>POST /v1/images/convert</code></td><td>Convert between jpg, png, webp, avif</td></tr>
+      <tr><td><code>POST /v1/images/resize</code></td><td>Resize by width/height/scale; keeps aspect ratio</td></tr>
+      <tr><td><code>POST /v1/pdf/merge</code></td><td>Merge up to 50 PDFs into one</td></tr>
+      <tr><td><code>POST /v1/pdf/split</code></td><td>Split by page ranges; returns a ZIP</td></tr>
+      <tr><td><code>POST /v1/pdf/compress</code></td><td>Downsample images inside a PDF to shrink size</td></tr>
+      <tr><td><code>POST /v1/qr/create</code></td><td>Generate static QR PNGs in bulk</td></tr>
+      <tr><td><code>GET /v1/usage</code></td><td>Current quota usage for your key</td></tr>
+    </table>
+
+    <h2>Authentication &amp; limits</h2>
+    <p>All requests use <code>Authorization: Bearer &lt;key&gt;</code>. Rate limits are per key; <code>429</code> responses include a <code>Retry-After</code> header. Webhooks notify you on large batch jobs.</p>
+
+    <h2>API pricing</h2>
+    <table class="spec">
+      <tr><th>Tier</th><th>Price</th><th>Calls / month</th><th>Max file</th><th>Support</th></tr>
+      <tr><td><strong>Free</strong></td><td>$0</td><td>1,000</td><td>25 MB</td><td>Community</td></tr>
+      <tr><td><strong>Pro</strong></td><td>$19/mo</td><td>25,000</td><td>100 MB</td><td>Email</td></tr>
+      <tr><td><strong>Scale</strong></td><td>$99/mo</td><td>250,000</td><td>200 MB</td><td>Priority</td></tr>
+      <tr><td><strong>Enterprise</strong></td><td>Custom</td><td>Unlimited</td><td>Custom</td><td>SLA + dedicated</td></tr>
+    </table>
+    <p style="color:var(--muted)">One file processed = one call. Overage: $0.004/call on paid tiers. Compare: per-file APIs in this space charge $0.002–$0.009 per compression at volume.</p>
+
+    <h2>Why build on us?</h2>
+    <ul>
+      <li><strong>Zero learning curve</strong> — multipart uploads, predictable JSON errors.</li>
+      <li><strong>Privacy-first</strong> — files processed in-memory, deleted after 1 hour.</li>
+      <li><strong>Battle-tested engines</strong> — the same code serving our free tools.</li>
+    </ul>
+    <div class="faq"><h2>API FAQs</h2>
+      <details><summary>Is the free tier really free?</summary><p>Yes — 1,000 calls/month, no credit card. Perfect for prototypes and side projects.</p></details>
+      <details><summary>Do you store my files?</summary><p>No. Files are processed in memory and purged within 1 hour. Enterprise can opt for zero-retention.</p></details>
+      <details><summary>Can I white-label the tools?</summary><p>Enterprise plans include white-label embeds and custom domains.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="index.html">Tools</a> · <a href="pricing.html">Pricing</a></div></footer>
+<script src="js/common.js"></script>
+</body>
+</html>

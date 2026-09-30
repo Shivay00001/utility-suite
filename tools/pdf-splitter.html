@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Split PDF Online — Extract Pages from PDF Free</title>
+<meta name="description" content="Free PDF splitter: extract pages or split a PDF into separate files by page ranges. No signup, runs in your browser.">
+<meta name="keywords" content="split pdf online, extract pages from pdf, separate pdf pages, split pdf free">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/pdf-splitter.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I split a PDF into separate pages?","acceptedAnswer":{"@type":"Answer","text":"Upload your PDF, choose 'one file per page' or enter page ranges like 1-3, 5, and download the result."}},
+ {"@type":"Question","name":"Are extracted pages identical quality?","acceptedAnswer":{"@type":"Answer","text":"Yes — pages are copied without re-compression."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>Split PDF Online</h1>
+  <p class="sub">Extract pages or split a PDF into separate files. Free, no signup — everything happens in your browser.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div class="drop" id="dz"><div>📁 <strong>Drop a PDF here</strong> or click to browse</div>
+      <input type="file" id="fi" accept="application/pdf,.pdf"></div>
+    <div id="info" style="color:var(--muted);font-size:.9rem;margin-top:8px"></div>
+    <div class="controls">
+      <div class="field"><label>Split mode</label><select id="mode">
+        <option value="ranges">Page ranges → one PDF</option><option value="each">Every page → separate PDFs (ZIP)</option></select></div>
+      <div class="field" id="rf"><label>Ranges (e.g. 1-3, 5, 8-10)</label><input type="text" id="ranges" value="1-3"></div>
+    </div>
+    <button class="btn" id="go" disabled>Split PDF</button>
+    <div class="progress" id="pg"><i></i></div>
+    <div class="result" id="res"></div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>How to split a PDF</h2>
+    <ol><li>Upload your PDF.</li><li>Enter the pages you want (e.g. <code>1-3, 5, 8-10</code>) or choose one-file-per-page.</li><li>Download the result — single PDF or ZIP.</li></ol>
+    <div class="faq"><h2>FAQs</h2>
+      <details><summary>Does splitting reduce quality?</summary><p>No. Pages are copied losslessly — text, images and vectors stay identical.</p></details>
+      <details><summary>Can I split a scanned PDF?</summary><p>Yes — splitting works on any PDF, scanned or not.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../assets/pdf-lib.min.js"></script>
+<script src="../assets/jszip.min.js"></script>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const dz=document.getElementById('dz'),go=document.getElementById('go'),info=document.getElementById('info'),
+      pg=document.getElementById('pg'),res=document.getElementById('res'),mode=document.getElementById('mode');
+let file=null,pageCount=0,srcDoc=null;
+VQT.dropzone(dz,{onFiles(f){if(!f[0])return;file=f[0];load();}});
+mode.onchange=()=>document.getElementById('rf').style.display=mode.value==='ranges'?'':'none';
+async function load(){
+  go.disabled=true;info.textContent='Reading PDF…';
+  try{
+    const buf=await VQT.readAs('array',file);
+    srcDoc=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+    pageCount=srcDoc.getPageCount();
+    info.textContent=`📄 ${file.name} — ${pageCount} pages, ${VQT.fmt(file.size)}`;
+    document.getElementById('ranges').value='1-'+Math.min(3,pageCount);
+    go.disabled=false;
+  }catch(e){info.textContent='❌ '+e.message;}
+}
+function parseRanges(str,max){
+  const out=new Set();
+  str.split(',').forEach(part=>{
+    const p=part.trim();if(!p)return;
+    const m=p.match(/^(\d+)\s*-\s*(\d+)$/);
+    if(m){const a=Math.max(1,+m[1]),b=Math.min(max,+m[2]);for(let i=a;i<=b;i++)out.add(i-1);}
+    else if(/^\d+$/.test(p)){const n=+p;if(n>=1&&n<=max)out.add(n-1);}
+  });
+  return[...out].sort((a,b)=>a-b);
+}
+go.onclick=async()=>{
+  go.disabled=true;res.classList.remove('show');
+  try{
+    const base=file.name.replace(/\.pdf$/i,'');
+    if(mode.value==='ranges'){
+      const idx=parseRanges(document.getElementById('ranges').value,pageCount);
+      if(!idx.length)throw new Error('No valid pages in that range.');
+      const out=await PDFLib.PDFDocument.create();
+      (await out.copyPages(srcDoc,idx)).forEach(p=>out.addPage(p));
+      const bytes=await out.save({useObjectStreams:true});
+      const blob=new Blob([bytes],{type:'application/pdf'});
+      show(`✅ Extracted ${idx.length} page(s)`,`<span>Size: <b>${VQT.fmt(blob.size)}</b></span>`,
+        'Download PDF',()=>VQT.download(blob,`${base}-pages.pdf`));
+    }else{
+      const zip=new JSZip();
+      for(let i=0;i<pageCount;i++){
+        VQT.progress(pg,i/pageCount);
+        const out=await PDFLib.PDFDocument.create();
+        (await out.copyPages(srcDoc,[i])).forEach(p=>out.addPage(p));
+        zip.file(`${base}-page-${i+1}.pdf`,await out.save({useObjectStreams:true}));
+      }
+      VQT.progress(pg,1);
+      const u8=await zip.generateAsync({type:'uint8array'});
+      const blob=new Blob([u8],{type:'application/zip'});
+      show(`✅ Split into ${pageCount} files`,`<span>ZIP size: <b>${VQT.fmt(blob.size)}</b></span>`,
+        'Download ZIP',()=>VQT.download(blob,`${base}-split.zip`));
+    }
+  }catch(e){res.innerHTML='❌ '+e.message;res.classList.add('show');}
+  VQT.progress(pg,null);go.disabled=false;
+  function show(title,stats,label,fn){
+    res.innerHTML=`<strong>${title}</strong><div class="stats">${stats}</div>`;
+    const b=document.createElement('button');b.className='btn green';b.textContent=label;b.onclick=fn;
+    res.appendChild(b);res.classList.add('show');
+  }
+};
+})();
+</script>
+</body>
+</html>

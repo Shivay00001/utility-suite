@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merge PDF Online — Combine PDF Files Free, No Signup</title>
+<meta name="description" content="Free PDF merger: combine multiple PDF files into one online. Reorder pages, no signup, no watermark — files never leave your browser.">
+<meta name="keywords" content="merge pdf online, combine pdf, merge pdf files free, join pdf">
+<link rel="canonical" href="https://tools.visionquantech.com/tools/pdf-merger.html">
+<link rel="stylesheet" href="../css/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I merge PDF files?","acceptedAnswer":{"@type":"Answer","text":"Add your PDFs, drag to reorder, click Merge. Your combined PDF downloads instantly."}},
+ {"@type":"Question","name":"Is there a limit on the number of PDFs?","acceptedAnswer":{"@type":"Answer","text":"Free merges up to 10 files at 25 MB each. Pro supports 100 files up to 200 MB."}}
+]}
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="../index.html" style="text-decoration:none"><span class="logo">⚙</span> VisionQuantech <span style="color:var(--muted);font-weight:400">Tools</span></a>
+  <nav class="navlinks"><a href="../index.html">Tools</a><a href="../pricing.html">Pricing</a><a href="../api.html">API</a></nav>
+</div></header>
+<div class="wrap">
+  <h1>Merge PDF Online</h1>
+  <p class="sub">Combine multiple PDFs into one document. Reorder with one click — free, no watermark, processed locally.</p>
+  <!-- ADSENSE: leaderboard
+  <div class="adslot leader">Advertisement</div> -->
+  <div class="toolbox">
+    <div class="drop" id="dz"><div>📁 <strong>Drop PDF files here</strong> or click to browse<br><small>Order = merge order. Up to 10 files free.</small></div>
+      <input type="file" id="fi" accept="application/pdf,.pdf" multiple></div>
+    <div class="filelist" id="list"></div>
+    <button class="btn" id="go" disabled>Merge PDFs</button>
+    <div class="progress" id="pg"><i></i></div>
+    <div class="result" id="res"></div>
+  </div>
+  <!-- ADSENSE: responsive
+  <div class="adslot box">Advertisement</div> -->
+  <section class="article">
+    <h2>How to merge PDFs</h2>
+    <ol><li>Add your PDF files above.</li><li>Use ↑ ↓ to arrange them in the order you want.</li><li>Click <strong>Merge PDFs</strong> — the combined file downloads automatically.</li></ol>
+    <h2>Private by design</h2>
+    <p>Unlike most "free" PDF mergers, nothing is uploaded. Merging happens with JavaScript inside your browser, so contracts, resumes and invoices stay on your device.</p>
+    <div class="faq"><h2>FAQs</h2>
+      <details><summary>Will merging change my PDFs?</summary><p>No — pages are copied exactly as-is. No watermarks, no re-compression.</p></details>
+      <details><summary>Can I merge password-protected PDFs?</summary><p>Remove the password first (in your PDF reader), then merge.</p></details>
+    </div>
+  </section>
+</div>
+<footer><div class="wrap" style="text-align:center">© 2026 VisionQuantech · <a href="../index.html">All tools</a></div></footer>
+<script src="../assets/pdf-lib.min.js"></script>
+<script src="../js/common.js"></script>
+<script>
+(function(){
+const dz=document.getElementById('dz'),list=document.getElementById('list'),go=document.getElementById('go'),
+      pg=document.getElementById('pg'),res=document.getElementById('res');
+let files=[];
+VQT.dropzone(dz,{onFiles(f){f.filter(x=>/pdf/i.test(x.type)||/\.pdf$/i.test(x.name)).forEach(x=>files.push(x));render();}});
+function render(){
+  list.innerHTML='';
+  files.forEach((f,i)=>{
+    const d=document.createElement('div');d.className='fileitem';
+    d.innerHTML=`<span>${i+1}. 📄 ${f.name} <small>${VQT.fmt(f.size)}</small></span>`;
+    const c=document.createElement('span');
+    if(i>0){const u=document.createElement('button');u.className='btn ghost';u.style.padding='4px 10px';u.textContent='↑';
+      u.onclick=()=>{[files[i-1],files[i]]=[files[i],files[i-1]];render();};c.appendChild(u);}
+    if(i<files.length-1){const dn=document.createElement('button');dn.className='btn ghost';dn.style.padding='4px 10px';dn.textContent='↓';
+      dn.onclick=()=>{[files[i+1],files[i]]=[files[i],files[i+1]];render();};c.appendChild(dn);}
+    const x=document.createElement('button');x.className='btn ghost';x.style.padding='4px 10px';x.textContent='✕';
+    x.onclick=()=>{files.splice(i,1);render();};c.appendChild(x);
+    d.appendChild(c);list.appendChild(d);
+  });
+  go.disabled=files.length<1;
+}
+go.onclick=async()=>{
+  go.disabled=true;res.classList.remove('show');
+  try{
+    const out=await PDFLib.PDFDocument.create();
+    for(let i=0;i<files.length;i++){
+      VQT.progress(pg,i/files.length);
+      const buf=await VQT.readAs('array',files[i]);
+      const src=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+      const pages=await out.copyPages(src,src.getPageIndices());
+      pages.forEach(p=>out.addPage(p));
+    }
+    VQT.progress(pg,1);
+    const bytes=await out.save({useObjectStreams:true});
+    const blob=new Blob([bytes],{type:'application/pdf'});
+    res.innerHTML=`<strong>✅ Merged ${files.length} PDFs</strong><div class="stats"><span>Pages: <b>${out.getPageCount()}</b></span><span>Size: <b>${VQT.fmt(blob.size)}</b></span></div>`;
+    const b=document.createElement('button');b.className='btn green';b.textContent='Download merged PDF';
+    b.onclick=()=>VQT.download(blob,'merged.pdf');res.appendChild(b);res.classList.add('show');
+  }catch(e){res.innerHTML='❌ '+e.message;res.classList.add('show');}
+  VQT.progress(pg,null);go.disabled=false;
+};
+})();
+</script>
+</body>
+</html>
