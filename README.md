@@ -1,5 +1,7 @@
 # VisionQuantech Tools — Utility Suite
 
+Built by [VisionQuantech](https://visionquantech.com) — AI agents, apps & tools for small businesses.
+
 Free, client-side utility tools (no backend, zero marginal cost). Monetized via display ads (free tier) + Pro subscriptions + a future REST API.
 
 ## Structure
